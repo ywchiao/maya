@@ -1,0 +1,21 @@
+# Thumbs.db
+Thumbs.db
+
+# Doxygen files
+Doxy
+
+# C/C++ object files
+*.o
+*.obj
+
+# Java class file
+*.class
+
+# python compiled file
+*.pyc
+
+# generic files
+*~
+*.lock
+*.swp
+*.out

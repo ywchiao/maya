@@ -1,0 +1,11 @@
+{
+    "type" : "copper",
+    "location" :
+       [
+         100,
+         20
+       ],
+    "amount": 6,
+    "extra" : "jad"
+    "respawn" : 30
+}
