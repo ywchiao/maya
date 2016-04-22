@@ -11,12 +11,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#define BUF_SIZE 128
-
-struct CommPort {
-    char *ip_addr;
-    char *port_number;
-};
+#include "user.h"
 
 int login(char *ip, char *port) {
     int fd_socket;
@@ -69,21 +64,16 @@ int getCommPort(int argc, char *argv[], struct CommPort *comm_port) {
             // ip address
             comm_port->ip_addr = argv[i + 1];
         }
-        else if (strcmp("-p", argv[i]) == 0) {
+
+        if (strcmp("-p", argv[i]) == 0) {
             // port number
             comm_port->port_number = argv[i + 1];
         } // esle
-        else if (strcmp("-h", argv[i]) == 0) {
+
+        if (strcmp("-h", argv[i]) == 0) {
             // help
 //            print_help();
         }
-        else {
-            usage();
-
-            ok = -1;
-
-            break;
-        } // esle
     } // for
 
     return ok;
@@ -101,6 +91,7 @@ int main(int argc, char *argv[]) {
     };
 
     if (getCommPort(argc, argv, &comm_port)) {
+        printf("somethying wrong!");
         exit(-1);
     };
 
