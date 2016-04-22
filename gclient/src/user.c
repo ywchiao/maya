@@ -56,7 +56,7 @@ void usage(void) {
         "    Usage: user [options]"
     }; // msgs[]
 
-    for (int i = 0; i < sizeof(msgs) / sizeof(char *); ++ i) {
+    for (unsigned i = 0; i < sizeof(msgs) / sizeof(char *); ++ i) {
         printf("%s\n", msgs[i]);
     } // od
 } // usage()
@@ -81,6 +81,8 @@ int getCommPort(int argc, char *argv[], struct CommPort *comm_port) {
             usage();
 
             ok = -1;
+
+            break;
         } // esle
     } // for
 
