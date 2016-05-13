@@ -17,14 +17,13 @@ BLD=bin
 BLD_NUM=build.number
 
 INCLUDES=-I. -I$(INC)
-LIBS=
-#LIBS=-lrt -lncursesw
+LIBS=-lncursesw
 #LIBS=$(GTK_LIBS) -lstdc++
 
 CC=gcc
 
-CFLAGS= -std=c11 -O3 -Wall -Wextra -D_GNU_SOURCE -DNDEBUG $(VER_INFO) $(3RD_CFLAGS)
-CDEBUG= -std=c11 -g -O0 -Wall -Wextra -D_GNU_SOURCE $(VER_INFO) $(3RD_CFLAGS)
+CFLAGS= -std=c11 -O3 -Wall -Wextra -DNDEBUG $(VER_INFO) $(3RD_CFLAGS)
+CDEBUG= -std=c11 -g -O0 -Wall -Wextra $(VER_INFO) $(3RD_CFLAGS)
 
 LDFLAG= -L$(LIB)
 

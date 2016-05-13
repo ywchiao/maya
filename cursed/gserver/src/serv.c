@@ -45,9 +45,6 @@ void msg_recv(int comm, char *msg, int size) {
 
 void msg_send(int comm, char *msg) {
     write(comm, msg, strlen(msg) + 1);
-
-//    fflush(comm);
-
     printf("send -> %s", msg);
 } // msg_send
 
@@ -82,6 +79,7 @@ int main(int argc, char *argv[]) {
 
     printf("Orca server started...\n");
 
+//    fd_comm = reception(argv[1]); // 1: port,  waiting for connection
     fd_comm = init(argv[1]); // 1: port,  waiting for connection
     fd_max = fd_comm;
 
@@ -133,8 +131,8 @@ int main(int argc, char *argv[]) {
                 fd_socket = fd_conns[i];
 
                 if (fd_socket != 0) {
-                    msg_send(fd_socket, msg);
-//                    send(fd_socket, msg, strlen(msg), MSG_DONTWAIT);
+//                    msg_send(fd_socket, msg);
+                    send(fd_socket, msg, strlen(msg), MSG_DONTWAIT);
                 }
             } // od
         }

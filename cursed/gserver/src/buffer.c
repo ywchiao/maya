@@ -1,5 +1,4 @@
 
-#include <stdio.h>
 #include <string.h>
 
 #include "buffer.h"
@@ -9,28 +8,21 @@ static int tail = 0;
 
 static char buffer[MAX_MESSAGES][LEN_MESSAGE];
 
-char * next_buffer() {
-    char * msg_buffer = NULL;
-
+char *next_buffer() {
     head = (head + 1) % MAX_MESSAGES;
 
-    if (head != tail) {
-        msg_buffer = buffer[head];
-    } // fi
-
-    return msg_buffer;
+    return buffer[head];
 } // msg_buffer()
 
 char *next_msg() {
-    char * msg_buffer = NULL;
-
-    if (head != tail) {
+    if (head == tail) {
+        return NULL;
+    } // fi
+    else {
         tail = (tail + 1) % MAX_MESSAGES;
 
-        msg_buffer = buffer[tail];
+        return buffer[tail];
     }
-
-    return msg_buffer;
 } // next_msg()
 
 // buffer.c

@@ -17,14 +17,13 @@ BLD=bin
 BLD_NUM=build.number
 
 INCLUDES=-I. -I$(INC)
-LIBS=
-#LIBS=-lrt -lncursesw
+LIBS=-lncurses
 #LIBS=$(GTK_LIBS) -lstdc++
 
-CC=gcc
+CC=clang
 
-CFLAGS= -std=c11 -O3 -Wall -Wextra -D_GNU_SOURCE -DNDEBUG $(VER_INFO) $(3RD_CFLAGS)
-CDEBUG= -std=c11 -g -O0 -Wall -Wextra -D_GNU_SOURCE $(VER_INFO) $(3RD_CFLAGS)
+CFLAGS= -std=c11 -O3 -Weverything -DNDEBUG $(VER_INFO) $(3RD_CFLAGS)
+CDEBUG= -std=c11 -g -O0 -Weverything $(VER_INFO) $(3RD_CFLAGS)
 
 LDFLAG= -L$(LIB)
 
@@ -35,7 +34,6 @@ VER_INFO= -D__MAJOR__=$(MAJOR) \
 		  -D__PATCH__=$(PATCH) \
 		  -D__BUILD__=$(shell cat $(BLD_NUM))
 
-#SOURCES=$(filter-out $(SRC)/about.c, $(wildcard $(SRC)/*.c))
 SOURCES=$(wildcard $(SRC)/*.c)
 HEADERS=$(addprefix $(INC)/,$(notdir $(patsubst %.c,%.h,$(SOURCES))))
 OBJECTS=$(notdir $(patsubst %.c,%.o,$(SOURCES)))

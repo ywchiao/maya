@@ -17,8 +17,7 @@ BLD=bin
 BLD_NUM=build.number
 
 INCLUDES=-I. -I$(INC)
-LIBS=
-#LIBS=-lrt -lncursesw
+LIBS=-lrt -lncursesw
 #LIBS=$(GTK_LIBS) -lstdc++
 
 CC=gcc
