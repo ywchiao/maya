@@ -12,6 +12,7 @@
 #include <sys/types.h>
 
 #include "buffer.h"
+#include "user.h"
 
 #define BUF_SIZE 128
 
@@ -40,6 +41,9 @@ void msg_recv(int comm, char *msg, int size) {
     memset(msg, 0, size);
 
     read(comm, msg, size);
+
+    msg[strcspn(msg, "\r\n")] = '\0';
+
     printf("recv <- %s", msg);
 } // msg_recv
 
@@ -51,22 +55,23 @@ void msg_send(int comm, char *msg) {
     printf("send -> %s", msg);
 } // msg_send
 
-void reception(int fd_listen, int fd_conns[], int len) {
+int reception(int fd_listen) {
     int fd_socket;
-    char *welcome = "Welcome to the land of OrcA.\n";
+    char * welcome = "Welcome to the land of OrcA.\n";
 
     fd_socket = accept(fd_listen, (struct sockaddr *)NULL, NULL);
 
     msg_send(fd_socket, welcome);
 
-    for (int i = 0; i < len; ++ i) {
-        if (fd_conns[i] == 0) {
-            fd_conns[i] = fd_socket;
-
-            break;
-        }
-    } // od
+    return fd_socket;
 } // reception
+
+void login_(user_profile * user, char * msg) {
+    printf("login_ : %s \n", msg);
+    strcpy(user->nickname, msg);
+
+    user->state &= ~(STATE_LOGIN);
+} // login_()
 
 int main(int argc, char *argv[]) {
     char buffer[BUF_SIZE];
@@ -76,25 +81,23 @@ int main(int argc, char *argv[]) {
     int in_streams;
     int fd_max;
     int fd_socket;
-    int fd_conns[128];
     int res;
     fd_set fdset_ins;
+    user_profile users[128];
 
     printf("Orca server started...\n");
 
     fd_comm = init(argv[1]); // 1: port,  waiting for connection
     fd_max = fd_comm;
 
-//    msg_send(fd_comm, welcome);
-
-    memset(&fd_conns, 0, sizeof(fd_conns));
+    memset(&users, 0, sizeof(users));
 
     while (1) {
         FD_ZERO(&fdset_ins);
         FD_SET(fd_comm, &fdset_ins);
 
         for (int i = 0; i < 128; ++ i) {
-            fd_socket = fd_conns[i];
+            fd_socket = users[i].fd_socket;
 
             if (fd_socket != 0) {
                 FD_SET(fd_socket, &fdset_ins);
@@ -116,26 +119,46 @@ int main(int argc, char *argv[]) {
         } // fi
 
         if (FD_ISSET(fd_comm, &fdset_ins)) {
-            reception(fd_comm, fd_conns, 128);
-        } // fi
-
-        for (int i = 0; i < 128; ++ i) {
-            fd_socket = fd_conns[i];
-
-            if (FD_ISSET(fd_socket, &fdset_ins)) {
-               res = recv(fd_socket, next_buffer(), 128, MSG_DONTWAIT); 
-               printf("%d bytes read: %s", res, buffer);
-            } // fi
-        } // od
-
-        while (msg = next_msg()) {
             for (int i = 0; i < 128; ++ i) {
-                fd_socket = fd_conns[i];
+                if (users[i].fd_socket == 0) {
+                    users[i].fd_socket = reception(fd_comm);
+                    users[i].state |= STATE_LOGIN;
+
+                    break;
+                } // fi
+            } // od
+        } // fi
+        else {
+            for (int i = 0; i < 128; ++ i) {
+                fd_socket = users[i].fd_socket;
+
+                if (FD_ISSET(fd_socket, &fdset_ins)) {
+                    res = recv(fd_socket, buffer, 128, MSG_DONTWAIT); 
+                    // 清掉列尾的換行字元
+                    buffer[strcspn(buffer, "\r\n")] = '\0';
+
+                    if (users[i].state & STATE_LOGIN) {
+                        login_(&users[i], buffer);
+                    } // fi
+                    else {
+                        printf("%d bytes read: %s", res, msg);
+
+                        msg = next_buffer();
+                        sprintf(msg, "%s 說: %s\n", users[i].nickname, buffer);
+
+                        printf("sprintf: %s", msg);
+                    } // esle
+                } // fi
+            } // od
+        } // esle
+
+        while ((msg = next_msg())) {
+            for (int i = 0; i < 128; ++ i) {
+                fd_socket = users[i].fd_socket;
 
                 if (fd_socket != 0) {
                     msg_send(fd_socket, msg);
-//                    send(fd_socket, msg, strlen(msg), MSG_DONTWAIT);
-                }
+                } // fi
             } // od
         }
     } // while
