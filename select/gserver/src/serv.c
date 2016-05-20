@@ -57,17 +57,23 @@ void msg_send(int comm, char *msg) {
 
 int reception(int fd_listen) {
     int fd_socket;
-    char * welcome = "Welcome to the land of OrcA.\n";
+    char * welcome[] = {
+        "Welcome to the land of OrcA.\n",
+        "Your id: \n",
+    };
 
     fd_socket = accept(fd_listen, (struct sockaddr *)NULL, NULL);
 
-    msg_send(fd_socket, welcome);
+    for (int i = 0; i < sizeof(welcome) / sizeof(char *); ++ i) {
+        msg_send(fd_socket, welcome[i]);
+    } // od
 
     return fd_socket;
 } // reception
 
 void login_(user_profile * user, char * msg) {
     printf("login_ : %s \n", msg);
+
     strcpy(user->nickname, msg);
 
     user->state &= ~(STATE_LOGIN);
